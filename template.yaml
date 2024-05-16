@@ -1,24 +1,25 @@
-AWSTemplateFormatVersion: 2010-09-09
+AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
 Description: A Swagger UI for AWS API Gateway.
-
 Parameters:
   SwaggerSpecURL:
     Type: String
     Default: https://petstore.swagger.io/v2/swagger.json
     Description: Enter a publicly accessible URL to the Swagger spec JSON/YAML.
-
 Resources:
   SwaggerUiFunction:
     Type: AWS::Serverless::Function
     Properties:
       Description: The Lambda function that serves the Swagger UI.
-      CodeUri: swagger-ui/
+      CodeUri:
+        Bucket: <%REPO_BUCKET%>
+        Key: e7085e7c-164c-4002-905a-7dca9ed3d2a9
       Handler: app.handler
       Runtime: nodejs20.x
       Environment:
         Variables:
-          SWAGGER_SPEC_URL: !Ref SwaggerSpecURL
+          SWAGGER_SPEC_URL:
+            Ref: SwaggerSpecURL
       Events:
         SwaggerUiApi:
           Type: Api
@@ -30,8 +31,8 @@ Resources:
           Properties:
             Path: /swagger/{proxy+}
             Method: GET
-
 Outputs:
   SwaggerUiUrl:
     Description: Swagger UI URL
-    Value: !Sub https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/swagger/
+    Value:
+      Fn::Sub: https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/swagger/
